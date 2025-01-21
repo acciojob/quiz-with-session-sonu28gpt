@@ -29,8 +29,8 @@ const questions = [
     answer: "Ottawa",
   },
 ];
-
 // Display the quiz questions and choices
+let userAnswers=JSON.parse(sessionStorage.getItem('progress'))|| ["","","","",""]
 function renderQuestions() {
   for (let i = 0; i < questions.length; i++) {
     const question = questions[i];
@@ -41,7 +41,7 @@ function renderQuestions() {
       const choice = question.choices[j];
       const choiceElement = document.createElement("input");
       choiceElement.setAttribute("type", "radio");
-      choiceElement.setAttribute("name", `question-${i}`);
+      choiceElement.setAttribute("name", `${i}`);
       choiceElement.setAttribute("value", choice);
       if (userAnswers[i] === choice) {
         choiceElement.setAttribute("checked", true);
@@ -50,7 +50,40 @@ function renderQuestions() {
       questionElement.appendChild(choiceElement);
       questionElement.appendChild(choiceText);
     }
-    questionsElement.appendChild(questionElement);
+    // questionElement.appendChild(questionElement);
+	  document.querySelector('#questions').appendChild(questionElement);
   }
 }
 renderQuestions();
+ document.querySelectorAll('input[type="radio"]').forEach(input => {
+            input.addEventListener('change', (event) => {
+                const questionIndex = +event.target.name;
+				console.log(questionIndex);
+                userAnswers[questionIndex] = event.target.value;
+                sessionStorage.setItem('progress', JSON.stringify(userAnswers));
+            });
+        });
+
+
+let score=document.querySelector('#score');
+let btn=document.querySelector('#submit');
+
+btn.addEventListener('click',()=>{
+	let total=0;
+	for(let i=0;i<userAnswers.length;i++){
+		if(questions[i].answer==userAnswers[i]){
+			total++;
+		}
+	}
+	localStorage.setItem('score',String(total));
+	
+	
+	scoreUpdate();
+	
+})
+function scoreUpdate() {
+		let s=localStorage.getItem('score')
+		if(s){
+			score.textContent=`Your score is ${s} out of 5.`
+		}
+}
